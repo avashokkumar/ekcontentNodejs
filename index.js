@@ -3,6 +3,6 @@ exports.handler = async (event) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ message: "Lambda synced from GitHub updated!" }),
+    body: JSON.stringify({ message: "Lambda synced from GitHub updated bro!" }),
   };
 };
