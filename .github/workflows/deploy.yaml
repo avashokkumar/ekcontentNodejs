@@ -1,7 +1,7 @@
     - name: Configure AWS CLI
       run: |
-        aws configure set aws_access_key_id AKIAWQUOZHEJ5GZB4473
-        aws configure set aws_secret_access_key 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
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws configure set default.region ap-south-1
 
     - name: Zip Lambda Code
@@ -15,7 +15,7 @@
           aws lambda create-function \
             --function-name MySyncLambda \
             --runtime nodejs18.x \
-            --role arn:aws:iam::arn:aws:iam::448049789203:role/awslamdarole \
+            --role arn:aws:iam::448049789203:role/awslamdarole \
             --handler index.handler \
             --zip-file fileb://function.zip
         else
