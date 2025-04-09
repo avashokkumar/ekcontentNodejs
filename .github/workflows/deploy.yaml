@@ -1,26 +1,41 @@
-    - name: Configure AWS CLI
-      run: |
-        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws configure set default.region ap-south-1
+name: Deploy to AWS Lambda
 
-    - name: Zip Lambda Code
-      run: zip -r function.zip .
+on:
+  push:
+    branches:
+      - main
 
-    - name: Create or Update Lambda
-      run: |
-        FUNCTION_EXISTS=$(aws lambda get-function --function-name MySyncLambda || echo "false")
-        if [ "$FUNCTION_EXISTS" = "false" ]; then
-          echo "Creating new Lambda function..."
-          aws lambda create-function \
-            --function-name MySyncLambda \
-            --runtime nodejs18.x \
-            --role arn:aws:iam::448049789203:role/awslamdarole \
-            --handler index.handler \
-            --zip-file fileb://function.zip
-        else
-          echo "Updating existing Lambda function..."
-          aws lambda update-function-code \
-            --function-name MySyncLambda \
-            --zip-file fileb://function.zip
-        fi
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ap-south-1
+
+      - name: Zip Lambda Code
+        run: zip -r function.zip .
+
+      - name: Create or Update Lambda
+        run: |
+          FUNCTION_EXISTS=$(aws lambda get-function --function-name MySyncLambda || echo "false")
+          if [ "$FUNCTION_EXISTS" = "false" ]; then
+            echo "Creating new Lambda function..."
+            aws lambda create-function \
+              --function-name MySyncLambda \
+              --runtime nodejs18.x \
+              --role arn:aws:iam::448049789203:role/awslamdarole \
+              --handler index.handler \
+              --zip-file fileb://function.zip
+          else
+            echo "Updating existing Lambda function..."
+            aws lambda update-function-code \
+              --function-name MySyncLambda \
+              --zip-file fileb://function.zip
+          fi
